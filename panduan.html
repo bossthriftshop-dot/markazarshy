@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+
+{% block title %}Panduan{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">Panduan Penggunaan Expert Advisor (EA)</h1>
+    <p class="text-base sm:text-lg mb-6 text-gray-700 text-center">Langkah-langkah dan jawaban atas pertanyaan umum mengenai instalasi dan penggunaan EA dari Markaz Arshy.</p>
+
+    <div class="space-y-8">
+        <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Langkah 1: Instalasi EA di MetaTrader</h2>
+            <ul class="list-disc pl-6 space-y-3 text-gray-700 leading-relaxed text-base">
+                <li>Unduh file Expert Advisor (.ex5) yang telah kami sediakan dari halaman <a href="{{ url_for('download_ea') }}" class="text-blue-600 hover:underline font-medium">Download EA</a>.</li>
+                <li>Buka platform MetaTrader 5 Anda.</li>
+                <li>Klik menu <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">File</code> &rarr; <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Open Data Folder</code>.</li>
+                <li>Buka folder <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">MQL5</code>, lalu masuk ke folder <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Experts</code>.</li>
+                <li>Salin (copy) file EA yang telah Anda unduh ke dalam folder <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Experts</code> tersebut.</li>
+                <li>Kembali ke MetaTrader, klik kanan pada panel <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Navigator</code> dan pilih <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Refresh</code>.</li>
+                <li>EA Anda akan muncul di bawah daftar Expert Advisors.</li>
+                <li>Tekan keyboard <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Ctrl+O</code>, maka akan muncul layar baru. Klik tab <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Expert Advisor</code>.</li>
+                <li>Ceklist <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Allow Webrequest</code>. Tambahkan Url Website Ini atau copy: 
+                    <span id="url" class="text-blue-600 font-mono truncate bg-gray-100 px-2 py-1 rounded text-sm">https://mullet-diverse-pheasant.ngrok-free.app</span>
+                    <button onclick="copyToClipboard('url', 'copy-url-success')" class="ml-2 bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition duration-200 text-xs font-semibold" aria-label="Copy URL">
+                        <svg class="w-3 h-3 inline-block" fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
+                        Copy
+                    </button>
+                    <p class="text-green-600 mt-2 hidden text-xs font-medium" id="copy-url-success">URL berhasil disalin!</p>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Langkah 2: Konfigurasi License</h2>
+            <p class="text-gray-700 mb-4">License berfungsi untuk menghubungkan EA Anda dengan License yang terdaftar di sistem kami.</p>
+            <ul class="list-disc pl-6 space-y-3 text-gray-700 leading-relaxed text-base">
+                <li>Buka halaman <a href="{{ url_for('lisensi_page') }}" class="text-blue-600 hover:underline font-medium">License EA</a> di dashboard ini untuk menyalin License Anda.</li>
+                <li>Di MetaTrader, seret (drag) EA dari panel <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Navigator</code> ke grafik (chart) yang Anda inginkan.</li>
+                <li>Sebuah jendela pengaturan akan muncul. Buka tab <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Inputs</code>.</li>
+                <li>Cari parameter bernama <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">License</code> atau sejenisnya.</li>
+                <li>Tempelkan (paste) License Anda pada kolom <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Value</code>.</li>
+                <li>Pastikan Anda juga mengaktifkan "<code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Allow live trading</code>" di tab <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">Common</code>. Klik <code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">OK</code>.</li>
+            </ul>
+        </div>
+
+        <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Troubleshooting & Masalah Umum</h2>
+            <p class="text-gray-700 mb-4"><strong>EA tidak berjalan atau tidak membuka posisi?</strong></p>
+            <ul class="list-disc pl-6 space-y-3 text-gray-700 leading-relaxed text-base">
+                <li>Pastikan tombol "<code class="font-mono bg-gray-100 px-1 py-0.5 rounded text-sm">AutoTrading</code>" di toolbar MetaTrader aktif (berwarna hijau).</li>
+                <li>Periksa apakah License Anda sudah benar dan masih aktif di halaman <a href="{{ url_for('lisensi_page') }}" class="text-blue-600 hover:underline font-medium">License Saya</a>.</li>
+                <li>Pastikan koneksi internet stabil untuk mengambil sinyal dari server kami.</li>
+                <li>Periksa jurnal MetaTrader untuk pesan error terkait EA.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(elementId, successMessageId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const successMsg = document.getElementById(successMessageId);
+                if (successMsg) {
+                    successMsg.classList.remove('hidden');
+                    setTimeout(() => successMsg.classList.add('hidden'), 2000);
+                } else {
+                    alert('Berhasil disalin!');
+                }
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                alert('Gagal menyalin. Silakan coba lagi atau salin manual.');
+            });
+        }
+    </script>
+{% endblock %}

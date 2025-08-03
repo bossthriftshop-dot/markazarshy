@@ -1,0 +1,201 @@
+{% extends 'layout.html' %}
+
+{% block title %}Langganan{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">Langganan</h1>
+    <p class="text-base sm:text-lg mb-6 text-gray-700 text-center">Pilih durasi langganan dan unggah bukti pembayaran untuk mengaktifkan License Anda.</p>
+
+    <!-- HARGA LANGGANAN DISKON -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center border border-blue-200">
+            <div class="text-xl font-semibold text-blue-700 mb-2">1 Bulan</div>
+            <div class="text-gray-500 line-through text-sm">Rp 350.000</div>
+            <div class="text-2xl font-bold text-green-600 mb-2">Rp 200.000</div>
+            <div class="text-gray-600 text-xs">/ bulan</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center border border-blue-200">
+            <div class="text-xl font-semibold text-blue-700 mb-2">6 Bulan</div>
+            <div class="text-gray-500 line-through text-sm">Rp 2.100.000</div>
+            <div class="text-2xl font-bold text-green-600 mb-2">Rp 1.200.000</div>
+            <div class="text-gray-600 text-xs">/ 6 bulan</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center border border-blue-200">
+            <div class="text-xl font-semibold text-blue-700 mb-2">1 Tahun</div>
+            <div class="text-gray-500 line-through text-sm">Rp 4.200.000</div>
+            <div class="text-2xl font-bold text-green-600 mb-2">Rp 2.000.000</div>
+            <div class="text-gray-600 text-xs">/ tahun</div>
+        </div>
+    </div>
+    <!-- END HARGA -->
+
+    <!-- METODE PEMBAYARAN -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Multi Bank -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 shadow max-w-xl mx-auto">
+            <div class="flex items-center gap-2 mb-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a5 5 0 00-10 0v2M5 20h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z"/>
+                </svg>
+                <span class="font-semibold text-blue-700 text-lg">Rekening Bank</span>
+            </div>
+            <div class="space-y-2 ml-1 text-sm">
+                <div>
+                    <span class="font-medium">BCA:</span>
+                    <span class="font-mono text-gray-800">8831831103</span>
+                    <span class="text-gray-500">a.n. MADYA WULANDARI</span>
+                </div>
+                <div>
+                    <span class="font-medium">blu:</span>
+                    <span class="font-mono text-gray-800">0069 8931 9940</span>
+                    <span class="text-gray-500">a.n. AFRIYONO DWI SAPUTRO</span>
+                </div>
+                <div>
+                    <span class="font-medium">BNI:</span>
+                    <span class="font-mono text-gray-800">1909966838</span>
+                    <span class="text-gray-500">a.n. MADYA WULANDARI</span>
+                </div>
+            </div>
+            <div class="mt-3 text-gray-600 text-xs">* Transfer ke salah satu rekening di atas, sesuai nominal paket. Jangan lupa upload bukti transfer.</div>
+        </div>
+        <!-- QRIS -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 shadow flex flex-col items-center justify-center max-w-xl mx-auto">
+            <div class="flex items-center gap-2 mb-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect width="18" height="18" x="3" y="3" rx="2" fill="none" stroke="currentColor" stroke-width="2"></rect>
+                    <path stroke-linecap="round" stroke-width="2" d="M7 7h.01M17 7h.01M7 17h.01M17 17h.01M11 11h2v2h-2z"/>
+                </svg>
+                <span class="font-semibold text-blue-700 text-lg">QRIS (semua e-wallet & bank)</span>
+            </div>
+            <div class="w-40 h-40 bg-white border border-gray-200 rounded-lg flex items-center justify-center my-2">
+                <img src="/static/qris_sample.png" alt="QRIS Markaz Arshy" class="w-36 h-36 object-contain" loading="lazy">
+            </div>
+            <div class="text-gray-600 text-xs text-center">* Scan QRIS di atas via aplikasi bank/e-wallet, lalu upload bukti pembayaran.</div>
+        </div>
+    </div>
+    <!-- END METODE PEMBAYARAN -->
+
+    <!-- KONTAK ADMIN -->
+    <div class="bg-white rounded-lg shadow p-4 mb-8 max-w-2xl mx-auto flex flex-col items-center gap-1">
+        <div class="flex items-center gap-2 mb-1">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.05A11.05 11.05 0 0112 22 11.05 11.05 0 013 13.05V7.35A2.35 2.35 0 015.35 5h13.3A2.35 2.35 0 0121 7.35v5.7z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="font-semibold text-gray-700">Bantuan / Konfirmasi Pembayaran</span>
+        </div>
+        <a href="https://wa.me/6285157110863" target="_blank" class="inline-flex items-center text-green-700 font-semibold hover:underline gap-1 text-base">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.198.297-.767.967-.94 1.164-.173.198-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.148-.67-1.612-.916-2.208-.242-.58-.487-.501-.67-.511-.173-.008-.372-.009-.57-.009-.198 0-.521.074-.793.372-.272.297-1.038 1.016-1.038 2.479 0 1.462 1.063 2.876 1.211 3.075.149.198 2.093 3.197 5.077 4.363.71.244 1.263.39 1.694.499.712.182 1.36.157 1.87.096.571-.068 1.758-.719 2.006-1.413.248-.694.248-1.288.173-1.412-.074-.124-.272-.198-.57-.347z"/>
+            </svg>
+            +62 851-5711-0863
+        </a>
+        <span class="text-xs text-gray-500 mt-1 text-center">Chat WhatsApp admin jika butuh bantuan atau setelah transfer.</span>
+    </div>
+    <!-- END KONTAK ADMIN -->
+
+    <div class="bg-white p-6 sm:p-10 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+        <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Pilih Durasi Langganan</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <button type="button" onclick="selectDuration(1)" class="bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 transition duration-200 font-semibold">1 Bulan</button>
+            <button type="button" onclick="selectDuration(6)" class="bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 transition duration-200 font-semibold">6 Bulan</button>
+            <button type="button" onclick="selectDuration(12)" class="bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 transition duration-200 font-semibold">12 Bulan</button>
+        </div>
+        <form id="subscribe-form" method="POST" action="{{ url_for('handle_subscribe') }}" class="hidden">
+            {{ form.csrf_token }}
+            {{ form.duration(id="duration") }}
+        </form>
+        <form id="upload-form" method="POST" action="{{ url_for('upload_proof') }}" enctype="multipart/form-data" class="hidden">
+            {{ form.csrf_token }}
+            <div class="mb-4">
+                <label for="proof_file" class="block text-sm font-medium text-gray-700">Unggah Bukti Pembayaran</label>
+                {{ form.proof_file(class="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", accept="image/*,.pdf") }}
+            </div>
+            {{ form.submit(class="w-full bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 transition duration-200 font-semibold") }}
+            <p id="loading-message" class="text-center text-blue-600 mt-4 hidden">Mengunggah... Mohon tunggu.</p>
+        </form>
+    </div>
+
+    <script>
+        function selectDuration(months) {
+            document.getElementById('duration').value = months;
+
+            const submitButton = document.querySelector('#subscribe-form button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Loading...';
+                submitButton.classList.add('opacity-75', 'cursor-not-allowed');
+            }
+
+            fetch('{{ url_for("handle_subscribe") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ duration: months })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => { throw new Error(errorData.error || 'Network response was not ok'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.action === 'upload_proof') {
+                    document.getElementById('subscribe-form').classList.add('hidden');
+                    document.getElementById('upload-form').classList.remove('hidden');
+                } else {
+                    console.error('Subscription failed:', data.error);
+                    alert('Error: ' + (data.error || 'Terjadi kesalahan saat memilih durasi.'));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Terjadi kesalahan: ' + error.message);
+            })
+            .finally(() => {
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Kirim Bukti Pembayaran';
+                    submitButton.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            });
+        }
+
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+            const loadingMessage = document.getElementById('loading-message');
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Mengunggah...';
+            submitButton.classList.add('opacity-75', 'cursor-not-allowed');
+            loadingMessage.classList.remove('hidden');
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => { throw new Error(errorData.error || 'Network response was not ok'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('Terjadi kesalahan: ' + error.message);
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Kirim Bukti Pembayaran';
+                submitButton.classList.remove('opacity-75', 'cursor-not-allowed');
+                loadingMessage.classList.add('hidden');
+            });
+        });
+    </script>
+{% endblock %}

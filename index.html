@@ -1,0 +1,139 @@
+{% extends 'layout.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">Dashboard</h1>
+    <p class="text-base sm:text-lg mb-6 text-gray-700 text-center">Selamat datang, {{ user.username }}!</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Informasi License</h2>
+            <dl class="space-y-3 text-gray-700">
+                <div>
+                    <dt class="font-medium">Status License:</dt>
+                    <dd><span class="{{ badge_class }} text-white px-2.5 py-1.5 rounded-full text-sm font-semibold">{{ license_status }}</span></dd>
+                </div>
+                <div>
+                    <dt class="font-medium">License Anda:</dt>
+                    <dd class="flex items-center mt-1">
+                        <span id="api-key" class="truncate flex-grow bg-gray-50 p-2 rounded-md text-sm font-mono text-gray-800 w-full sm:w-auto break-all">{{ user.api_key | default('N/A', true) }}</span>
+                        <button onclick="copyToClipboard('api-key', 'copy-api-key-success')" class="ml-2 bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 transition duration-200 text-sm font-semibold" aria-label="Copy License">
+                            <svg class="w-4 h-4 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
+                            Copy
+                        </button>
+                    </dd>
+                    <p class="text-green-600 mt-2 hidden text-sm font-medium" id="copy-api-key-success">License berhasil disalin!</p>
+                </div>
+                <div>
+                    <dt class="font-medium">Berlaku dari:</dt>
+                    <dd>{{ user.start_date | default('N/A', true) }}</dd>
+                </div>
+                <div>
+                    <dt class="font-medium">Berlaku hingga:</dt>
+                    <dd>{{ user.end_date | default('N/A', true) }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+            <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Status Sinyal Terakhir <span class="text-sm text-gray-500">(Auto-refresh: 15 detik)</span></h2>
+            <div id="latest-signal-container" class="text-gray-700">
+                {% if last_signal and last_signal.order_type %}
+                    <div class="space-y-2">
+                        <p class="font-semibold">Sinyal Saat Ini: 
+                            <span class="text-{{ 'green' if last_signal.order_type == 'BUY' else 'red' if last_signal.order_type == 'SELL' else 'gray' }}-600 text-lg">
+                                {{ last_signal.order_type }}
+                            </span>
+                        </p>
+                        <p><strong>Diperbarui pada:</strong> {{ last_signal.timestamp | default('N/A', true) }}</p>
+                        <p><strong>Alasan:</strong> {{ last_signal.reason | default('N/A', true) }}</p>
+                    </div>
+                {% else %}
+                    <p class="text-gray-600">Belum ada sinyal yang dihasilkan. Server sedang menganalisis...</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(elementId, successMessageId) {
+            const element = document.getElementById(elementId);
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const successMsg = document.getElementById(successMessageId);
+                if (successMsg) {
+                    successMsg.classList.remove('hidden');
+                    setTimeout(() => successMsg.classList.add('hidden'), 2000);
+                } else {
+                    alert('Berhasil disalin!');
+                }
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                alert('Gagal menyalin. Silakan coba lagi atau salin manual.');
+            });
+        }
+
+        function fetchLatestSignal() {
+            const userApiKey = "{{ user.api_key }}";
+            const symbolToCheck = "XAUUSD";
+
+            fetch(`/api/get_signal?key=${userApiKey}&symbol=${symbolToCheck}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => { 
+                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`); 
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                const signalContainer = document.getElementById('latest-signal-container');
+                if (!signalContainer) return;
+
+                if (data.order_type && data.order_type !== 'WAIT') {
+                    let signalColorClass = 'text-gray-600';
+                    if (data.order_type === 'BUY') signalColorClass = 'text-green-600';
+                    else if (data.order_type === 'SELL') signalColorClass = 'text-red-600';
+
+                    let signalDetail = `<p><strong>Alasan:</strong> ${data.reason || 'N/A'}</p>`;
+                    if (data.signal_json) {
+                        const entry = data.signal_json.BuyEntry || data.signal_json.SellEntry || data.signal_json.BuyStop || data.signal_json.SellStop || 'N/A';
+                        const sl = data.signal_json.BuySL || data.signal_json.SellSL || data.signal_json.BuyStopSL || data.signal_json.SellStopSL || 'N/A';
+                        const tp = data.signal_json.BuyTP || data.signal_json.SellTP || data.signal_json.BuyStopTP || data.signal_json.SellStopTP || 'N/A';
+
+                        signalDetail += `
+                            <p><strong>Harga Entry:</strong> ${entry}</p>
+                            <p><strong>SL:</strong> ${sl}</p>
+                            <p><strong>TP:</strong> ${tp}</p>
+                            <p><strong>Tipe Order:</strong> ${data.signal_json.BuyEntry ? 'Limit Buy' : data.signal_json.SellEntry ? 'Limit Sell' : data.signal_json.BuyStop ? 'Stop Buy' : data.signal_json.SellStop ? 'Stop Sell' : 'N/A'}</p>
+                        `;
+                        if (data.signal_json.info) {
+                            signalDetail += `<p><strong>Konfluensi:</strong> ${data.signal_json.info.join(', ')}</p>`;
+                        }
+                    }
+
+                    signalContainer.innerHTML = `
+                        <div class="space-y-2">
+                            <p class="font-semibold">Sinyal Saat Ini: 
+                                <span class="${signalColorClass} text-lg">
+                                    ${data.order_type}
+                                </span>
+                            </p>
+                            <p><strong>Diperbarui pada:</strong> ${data.timestamp || 'N/A'}</p>
+                            ${signalDetail}
+                        </div>
+                    `;
+                } else {
+                    signalContainer.innerHTML = `<p class="text-gray-600">Belum ada sinyal yang dihasilkan. Server sedang menganalisis...</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching latest signal:', error);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', fetchLatestSignal);
+        setInterval(fetchLatestSignal, 15000);
+    </script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6 text-center">Register Akun Baru</h1>
+
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+        <!-- Change register_user to register_page in the form action -->
+        <form id="register-form" action="{{ url_for('register_page') }}" method="POST">
+            {{ form.csrf_token }}
+            
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                {{ form.username(class="mt-1 block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400", required=True, placeholder="Masukkan username") }}
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                {{ form.password(class="mt-1 block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400", required=True, placeholder="Masukkan password") }}
+            </div>
+
+            <div class="mb-4">
+                <label for="confirm_password" class="block text-sm font-medium text-gray-700">Ulangi Password</label>
+                {{ form.confirm_password(class="mt-1 block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400", required=True, placeholder="Ulangi password") }}
+            </div>
+
+            <div class="mb-4">
+                <label for="whatsapp_number" class="block text-sm font-medium text-gray-700">No. WhatsApp (dengan kode negara, contoh: +6281234567890)</label>
+                {{ form.whatsapp_number(class="mt-1 block w-full px-3 py-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400", required=True, placeholder="+6281234567890") }}
+            </div>
+
+            <div class="mb-6">
+                {{ form.agree_terms(id="agree_terms", class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded") }}
+                <label for="agree_terms" class="ml-2 text-sm text-gray-600">Saya menyetujui Syarat & Ketentuan website.</label>
+            </div>
+
+            {{ form.submit(id="submit-button", class="w-full bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 transition font-semibold") }}
+        </form>
+
+        <p class="mt-4 text-center text-sm text-gray-600">
+            Sudah punya akun? <a href="{{ url_for('login_page') }}" class="text-blue-600 hover:underline">Login di sini</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

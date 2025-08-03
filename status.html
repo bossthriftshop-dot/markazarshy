@@ -1,0 +1,107 @@
+{% extends 'layout.html' %}
+
+{% block title %}Status Sinyal Realtime{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">Status Sinyal Terakhir</h1>
+    <p class="text-base sm:text-lg mb-6 text-gray-700 text-center">Halaman ini menampilkan hasil analisis terakhir dari server. Auto-refresh setiap 15 detik.</p>
+
+    <div id="latest-signal-container" class="bg-white p-6 sm:p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300 text-gray-700">
+        {% if last_signal and last_signal.timestamp %}
+            <p class="mb-4 text-gray-600"><strong>Analisis Terakhir pada:</strong> {{ last_signal.timestamp }}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Sinyal</h2>
+                    <p class="text-{{ 'green' if last_signal.order_type == 'BUY' else 'red' if last_signal.order_type == 'SELL' else 'gray' }}-600 font-semibold text-lg">
+                        {{ last_signal.order_type }}
+                    </p>
+                </div>
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Detail</h2>
+                    <p><strong>Alasan:</strong> {{ last_signal.reason | default('N/A', true) }}</p>
+                    {% if last_signal.signal_json %}
+                        <p><strong>Harga Entry:</strong> {{ last_signal.signal_json.BuyEntry or last_signal.signal_json.SellEntry or last_signal.signal_json.BuyStop or last_signal.signal_json.SellStop or 'N/A' }}</p>
+                        <p><strong>SL:</strong> {{ last_signal.signal_json.BuySL or last_signal.signal_json.SellSL or last_signal.signal_json.BuyStopSL or last_signal.signal_json.SellStopSL or 'N/A' }}</p>
+                        <p><strong>TP:</strong> {{ last_signal.signal_json.BuyTP or last_signal.signal_json.SellTP or last_signal.signal_json.BuyStopTP or last_signal.signal_json.SellStopTP or 'N/A' }}</p>
+                        <p><strong>Tipe Order:</strong> 
+                            {% if last_signal.signal_json.BuyEntry %}Limit Buy{% elif last_signal.signal_json.SellEntry %}Limit Sell{% elif last_signal.signal_json.BuyStop %}Stop Buy{% elif last_signal.signal_json.SellStop %}Stop Sell{% else %}N/A{% endif %}
+                        </p>
+                        {% if last_signal.signal_json.info %}
+                            <p><strong>Konfluensi:</strong> {{ last_signal.signal_json.info | join(', ') }}</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-600">Belum ada sinyal yang dihasilkan. Server sedang menganalisis...</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function fetchLatestSignalStatus() {
+            const userApiKey = "{{ user.api_key if user else INTERNAL_SECRET_KEY }}"; 
+            const symbolToCheck = "BTCUSD"; // Ganti dengan simbol yang sesuai 
+
+            fetch(`/api/get_signal?key=${userApiKey}&symbol=${symbolToCheck}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => { 
+                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`); 
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                const signalContainer = document.getElementById('latest-signal-container');
+                if (!signalContainer) return;
+
+                if (data.order_type && data.order_type !== 'WAIT') {
+                    let signalColorClass = 'text-gray-600';
+                    if (data.order_type === 'BUY') signalColorClass = 'text-green-600';
+                    else if (data.order_type === 'SELL') signalColorClass = 'text-red-600';
+
+                    let signalDetailHtml = `<p><strong>Alasan:</strong> ${data.reason || 'N/A'}</p>`;
+                    if (data.signal_json) {
+                        const entry = data.signal_json.BuyEntry || data.signal_json.SellEntry || data.signal_json.BuyStop || data.signal_json.SellStop || 'N/A';
+                        const sl = data.signal_json.BuySL || data.signal_json.SellSL || data.signal_json.BuyStopSL || data.signal_json.SellStopSL || 'N/A';
+                        const tp = data.signal_json.BuyTP || data.signal_json.SellTP || data.signal_json.BuyStopTP || data.signal_json.SellStopTP || 'N/A';
+
+                        signalDetailHtml += `
+                            <p><strong>Harga Entry:</strong> ${entry}</p>
+                            <p><strong>SL:</strong> ${sl}</p>
+                            <p><strong>TP:</strong> ${tp}</p>
+                            <p><strong>Tipe Order:</strong> ${data.signal_json.BuyEntry ? 'Limit Buy' : data.signal_json.SellEntry ? 'Limit Sell' : data.signal_json.BuyStop ? 'Stop Buy' : data.signal_json.SellStop ? 'Stop Sell' : 'N/A'}</p>
+                        `;
+                        if (data.signal_json.info) {
+                            signalDetailHtml += `<p><strong>Konfluensi:</strong> ${data.signal_json.info.join(', ')}</p>`;
+                        }
+                    }
+
+                    signalContainer.innerHTML = `
+                        <p class="mb-4 text-gray-600"><strong>Analisis Terakhir pada:</strong> ${data.timestamp}</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Sinyal</h2>
+                                <p class="${signalColorClass} font-semibold text-lg">
+                                    ${data.order_type}
+                                </p>
+                            </div>
+                            <div>
+                                <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">Detail</h2>
+                                ${signalDetailHtml}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    signalContainer.innerHTML = `<p class="text-gray-600">Belum ada sinyal yang dihasilkan. Server sedang menganalisis...</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching latest signal status:', error);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', fetchLatestSignalStatus);
+        setInterval(fetchLatestSignalStatus, 15000);
+    </script>
+{% endblock %}
