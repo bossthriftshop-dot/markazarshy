@@ -53,7 +53,7 @@ def is_too_close_to_open_position(new_entry, open_positions, pip_threshold=100.0
     """
     now = datetime.now()
     recent_positions = []
-    
+
     # Filter untuk hanya mengambil posisi yang masih relevan
     for pos in open_positions:
         try:
@@ -73,7 +73,7 @@ def is_too_close_to_open_position(new_entry, open_positions, pip_threshold=100.0
                 return True
         except (ValueError, TypeError):
             continue
-            
+
     return False
 # ====================================================================
 
@@ -181,7 +181,7 @@ def is_api_key_valid(api_key):
 @app.before_request
 def require_login():
     public_routes = [
-        'login_page', 'register_page', 'get_signal', 'admin_login', 'static', 
+        'login_page', 'register_page', 'get_signal', 'admin_login', 'static',
         'status_page', 'receive_signal', 'feedback_trade', 'index', 'home_page', 'panduan_page'
     ]
     if request.path.startswith('/admin') and 'admin_id' in session:
@@ -307,7 +307,7 @@ def get_signal():
     api_key = request.args.get('key')
     if not api_key or not is_api_key_valid(api_key):
         return jsonify({"error": "Unauthorized. Invalid or expired API Key."}), 401
-    
+
     symbol = request.args.get('symbol', 'XAUUSD').upper()
     mapped_symbol = SYMBOL_ALIAS_MAP.get(symbol, 'XAUUSD')
     signal_data_key = f"{api_key}_{mapped_symbol}"
@@ -317,7 +317,7 @@ def get_signal():
         response_data = signal_data['signal_json']
         response_data.update({"signal_id": signal_data['signal_id'], "order_type": signal_data['order_type']})
         return jsonify(response_data)
-    
+
     return jsonify({"order_type": "WAIT"})
 
 @app.route('/api/internal/submit_signal', methods=['POST'])
@@ -329,51 +329,61 @@ def receive_signal():
     api_key = data.get('api_key', INTERNAL_SECRET_KEY)
     symbol = data.get('symbol', 'XAUUSD').upper()
     mapped_symbol = SYMBOL_ALIAS_MAP.get(symbol, 'XAUUSD')
-    signal_type = data.get('signal')
+    signal_type = data.get('signal') # 'BUY' or 'SELL'
+    order_type = data.get('order_type', signal_type) # 'BUY_LIMIT', 'SELL_STOP', etc.
     signal_json = data.get('signal_json', {})
-    
+
+    # --- PERBAIKAN: Ekstrak entry price dari semua jenis order ---
     entry_price = None
-    if signal_type == 'BUY': entry_price = signal_json.get('BuyEntry') or signal_json.get('BuyStop')
-    elif signal_type == 'SELL': entry_price = signal_json.get('SellEntry') or signal_json.get('SellStop')
+    if signal_type == 'BUY':
+        entry_price = signal_json.get('BuyEntry') or \
+                      signal_json.get('BuyStop') or \
+                      signal_json.get('BuyLimit')
+    elif signal_type == 'SELL':
+        entry_price = signal_json.get('SellEntry') or \
+                      signal_json.get('SellStop') or \
+                      signal_json.get('SellLimit')
 
-    pip_threshold = 100.0
-    open_positions = get_open_positions(api_key, mapped_symbol)
-    
-    if entry_price is not None and is_too_close_to_open_position(entry_price, open_positions, pip_threshold):
-        logging.warning(f"Sinyal ditolak oleh server: Entry {entry_price} terlalu dekat dengan posisi 'hantu' yang masih diingat.")
-        return jsonify({"error": f"Entry {entry_price} terlalu dekat dengan posisi aktif (pips < {pip_threshold}), sinyal di-skip"}), 409
+    # Hanya lakukan pemeriksaan jika entry_price berhasil ditemukan
+    if entry_price is not None:
+        pip_threshold = 100.0
+        open_positions = get_open_positions(api_key, mapped_symbol)
 
-    if signal_type in ['BUY', 'SELL'] and entry_price is not None:
+        if is_too_close_to_open_position(entry_price, open_positions, pip_threshold):
+            logging.warning(f"Sinyal ditolak oleh server: Entry {entry_price} terlalu dekat dengan posisi 'hantu' yang masih diingat.")
+            return jsonify({"error": f"Entry {entry_price} terlalu dekat dengan posisi aktif (pips < {pip_threshold}), sinyal di-skip"}), 409
+
         key = f"{api_key}_{mapped_symbol}"
         pos = {"entry": float(entry_price), "type": signal_type, "time": datetime.now().isoformat()}
         with open_positions_lock:
             if key not in open_positions_map: open_positions_map[key] = []
             now = datetime.now()
+            # Hapus posisi "hantu" yang sudah tua
             open_positions_map[key] = [p for p in open_positions_map.get(key, []) if (now - datetime.fromisoformat(p['time'])) < timedelta(hours=8)]
             open_positions_map[key].append(pos)
 
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     signal_payload = {
-        'signal_id': generate_signal_id(api_key, signal_type, timestamp),
-        'order_type': signal_type,
+        'signal_id': generate_signal_id(api_key, order_type, timestamp),
+        'order_type': order_type,  # --- PERBAIKAN: Gunakan order_type spesifik
         'timestamp': timestamp,
         'signal_json': signal_json
     }
-    
+
     conn = get_db()
     all_api_keys = [row['api_key'] for row in conn.execute("SELECT api_key FROM users WHERE status IN ('active','trial')").fetchall()]
     for user_api_key in all_api_keys:
         key_to_update = f"{user_api_key}_{mapped_symbol}"
         last_signal_info[key_to_update] = signal_payload.copy()
 
-    logging.info(f"📢 Sinyal BROADCAST: Type={signal_type}, Simbol={symbol}.")
+    logging.info(f"📢 Sinyal BROADCAST: Type={order_type}, Simbol={symbol}.")
     return jsonify({"message": "Signal received and broadcasted"}), 200
 
 @app.route("/api/feedback_trade", methods=["POST"])
 def feedback_trade():
     data = request.json
     if not data: return jsonify({"status": "error", "message": "No data received"}), 400
-    
+
     feedback_path = "trade_feedback.json"
     with feedback_file_lock:
         try:
@@ -437,7 +447,7 @@ def admin_activate_license(user_id):
     new_start_date = user_info['start_date'] if current_end_date > datetime.now().date() else datetime.now().date().isoformat()
 
     conn.execute("""
-        UPDATE users SET start_date = ?, end_date = ?, status = 'active', 
+        UPDATE users SET start_date = ?, end_date = ?, status = 'active',
         proof_filename = NULL, duration_pending = NULL WHERE id = ?
     """, (new_start_date, new_end_date.isoformat(), user_id))
     conn.commit()

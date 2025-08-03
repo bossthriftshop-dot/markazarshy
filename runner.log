@@ -1,0 +1,20 @@
+2025-08-03 13:29:16,421 - INFO - Mulai analisis untuk XAUUSD pada timeframe H1...
+2025-08-03 13:29:16,428 - INFO - [H1] --- Analisis Skor Dimulai ---
+2025-08-03 13:29:16,428 - INFO - [H1] Struktur Pasar: 'BULLISH_BOS, HH' (Skor: 3.00)
+2025-08-03 13:29:16,428 - INFO - [H1] FVG Terdekat: FVG_BULLISH (Skor: 2.40)
+2025-08-03 13:29:16,429 - INFO - [H1] Liquidity Sweep: BULLISH_LS (Skor: 3.00)
+2025-08-03 13:29:16,429 - INFO - [H1] OB Terdekat: BULLISH_OB (Skor: 0.90)
+2025-08-03 13:29:16,429 - INFO - [H1] Total Skor Sejauh Ini: 9.30
+2025-08-03 13:29:16,429 - INFO - [H1] Peluang BUY_LIMIT ditemukan di zona FVG_BULLISH. Entry: 1817.50000
+2025-08-03 13:29:16,429 - INFO - [H1] --- Analisis Selesai | Arah: BUY, Tipe: BUY_LIMIT, Skor: 9.30 ---
+2025-08-03 13:29:16,429 - INFO - Hasil Analisis: Signal=BUY, OrderType=BUY_LIMIT, Entry=1817.5, SL=1667.7190686090082, TP=2117.0618627819836, Score=9.3
+2025-08-03 13:29:16,429 - INFO - Sinyal valid ditemukan (BUY_LIMIT). Mempersiapkan untuk dikirim...
+2025-08-03 13:29:16,437 - INFO - Sinyal berhasil dikirim ke server. Respons: {'message': 'Signal received and broadcasted'}
+DUMMY: Fetching 200 candles for XAUUSD on H1 timeframe.
+DUMMY: Detecting structure.
+DUMMY: Detecting order blocks with filter: BULLISH_BOS, HH
+DUMMY: Detecting FVG.
+DUMMY: Detecting liquidity sweep.
+DUMMY: Detecting engulfing patterns.
+DUMMY: Detecting pinbar patterns.
+DUMMY: Calculating OTE for zone: {'type': 'FVG_BULLISH', 'top': 1820.0, 'bottom': 1815.0, 'strength': 0.8}
