@@ -336,13 +336,14 @@ def receive_signal():
     # --- PERBAIKAN: Ekstrak entry price dari semua jenis order ---
     entry_price = None
     if signal_type == 'BUY':
-        entry_price = signal_json.get('BuyEntry') or \
-                      signal_json.get('BuyStop') or \
-                      signal_json.get('BuyLimit')
+        # Cari nilai entry yang valid (bukan string kosong)
+        entry_price = signal_json.get('BuyEntry') or signal_json.get('BuyStop') or signal_json.get('BuyLimit')
     elif signal_type == 'SELL':
-        entry_price = signal_json.get('SellEntry') or \
-                      signal_json.get('SellStop') or \
-                      signal_json.get('SellLimit')
+        entry_price = signal_json.get('SellEntry') or signal_json.get('SellStop') or signal_json.get('SellLimit')
+
+    # Pastikan entry_price bukan string kosong sebelum melanjutkan
+    if not entry_price: # Ini akan menangani None dan ""
+        entry_price = None
 
     # Hanya lakukan pemeriksaan jika entry_price berhasil ditemukan
     if entry_price is not None:
