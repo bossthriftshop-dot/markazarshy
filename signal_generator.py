@@ -266,6 +266,21 @@ def analyze_tf_opportunity(
     if direction == "WAIT":
         order_type = None
 
+    # --- PEMERIKSAAN JARAK MINIMUM ANTAR ORDER ---
+    if direction != "WAIT":
+        # Dapatkan harga dari semua order/posisi yang sedang aktif
+        active_orders = get_active_orders(symbol, mt5_path)
+
+        # Asumsi nilai point. Untuk XAUUSD biasanya 0.01. Ini bisa dijadikan parameter.
+        point_value = 0.01
+        min_distance_pips = 10.0 # Sesuai permintaan
+
+        if not is_far_enough(entry_price_chosen, active_orders, point_value, min_distance_pips):
+            # Jika tidak cukup jauh, batalkan sinyal
+            logging.warning(f"Sinyal {direction} {order_type} @ {entry_price_chosen:.5f} DIBATALKAN karena terlalu dekat dengan order aktif.")
+            direction = "WAIT"
+            order_type = None
+
     sl, tp = 0.0, 0.0
     if direction != "WAIT":
         if direction == "BUY":
